@@ -1,90 +1,133 @@
+```text
+███████╗██████╗ ███████╗ ██████╗████████╗██████╗  █████╗
+██╔════╝██╔══██╗██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗
+███████╗██████╔╝█████╗  ██║        ██║   ██████╔╝███████║
+╚════██║██╔═══╝ ██╔══╝  ██║        ██║   ██╔══██╗██╔══██║
+███████║██║     ███████╗╚██████╗   ██║   ██║  ██║██║  ██║
+╚══════╝╚═╝     ╚══════╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
+```
+
 # Spectra
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Active-1f8b4c)
-![License](https://img.shields.io/badge/Use-Research%20%26%20Education-3b3f52)
+![Privacy Audit](https://img.shields.io/badge/Focus-LLM%20Privacy%20Auditing-0f172a)
+![Status](https://img.shields.io/badge/Status-v1%20Complete-16a34a)
+![Mode](https://img.shields.io/badge/Use-Research%20%26%20Education-3b3f52)
 
-**Tagline:** Privacy stress-testing for modern language models.
+**Tagline:** Probe. Measure. Expose privacy risk before deployment.
 
-Spectra is an **LLM Privacy Auditing Tool** built in Python. It probes AI language models using targeted prompts and similarity-based analysis to identify privacy risks across three core attack vectors. The tool produces module-level risk scores and generates a professional HTML audit report for review.
+```ini
+[SPECTRA_SYSTEM]
+version = v1.0
+status = operational
+purpose = LLM Privacy Auditing Tool
+primary_model = gemma-3-12b-it
+```
+
+Spectra is a Python-based LLM privacy auditing toolkit that stress-tests language models against three high-impact attack vectors. It runs targeted probes, computes risk scores, and produces an HTML audit report for fast technical review.
 
 ## What Spectra Does
 
-Spectra simulates realistic adversarial behavior against a selected LLM and evaluates how the model responds under privacy-sensitive conditions. It helps researchers and practitioners quickly assess whether a model appears vulnerable to leaking sensitive information, memorized text, or signs of training-data membership.
+```text
+[+] Simulates adversarial prompt behavior against an LLM
+[+] Measures leakage and memorization patterns with scoring logic
+[+] Aggregates module outputs into a unified risk posture
+[+] Generates a timestamped HTML report in /reports
+```
 
 ## Core Modules
 
-### 1. PII Detection Probing
+```text
+[+] PII Detection Probing
+	Uses crafted extraction prompts and Presidio entity analysis to detect leaked emails,
+	phone numbers, names, and addresses.
 
-This module sends crafted extraction-style prompts designed to coax private details (for example: emails, phone numbers, names, and addresses) from the model output. Responses are scanned with Presidio to detect and classify potential PII entities.
+[+] Verbatim Regurgitation Detection
+	Tests whether the model reproduces sensitive-style text using exact similarity
+	(RapidFuzz) and semantic similarity (Sentence Transformers).
 
-### 2. Verbatim Regurgitation Detection
+[+] Membership Inference Attack
+	Compares completion confidence between likely-seen corpus text and random nonsense
+	text to estimate potential membership inference signal.
+```
 
-This module tests whether the model reproduces sensitive-looking content with high fidelity. It compares model outputs against known reference texts using:
+## Audit Pipeline
 
-- exact-text similarity (RapidFuzz)
-- semantic similarity (Sentence Transformers)
+```text
+Input Model
+   |
+   v
+PII Probing -----> Regurgitation Check -----> Membership Inference
+   |                        |                          |
+   +------------------------+--------------------------+
+							|
+							v
+				 Score Aggregation (0-100)
+							|
+							v
+				 HTML Report Generation
+```
 
-High similarity scores are flagged as potential memorization/regurgitation risk.
+## Risk Scale
 
-### 3. Membership Inference Attack
-
-This module evaluates whether the model shows stronger completion confidence on likely-in-training text versus random nonsense text. A significant confidence gap can indicate potential membership inference risk.
+```text
+LOW     0-30   ████░░░░░░
+MEDIUM 31-70   ███████░░░
+HIGH   71-100  ██████████
+```
 
 ## Tech Stack
 
 | Component | Purpose |
 |---|---|
-| Python 3.11 | Core language/runtime |
-| google-genai | Gemini/Gemma model client integration |
-| presidio-analyzer | PII detection and entity classification |
-| spaCy | NLP support for Presidio pipelines |
-| rapidfuzz | Fast exact/fuzzy text similarity |
-| sentence-transformers | Embedding-based semantic similarity |
-| scikit-learn | Supporting ML/statistical utilities |
-| reportlab | Report export utilities |
-| streamlit | Optional dashboard/UI layer |
+| Python 3.11 | Core runtime |
+| google-genai | Gemini/Gemma model client |
+| presidio-analyzer | PII entity detection |
+| spacy | NLP backend support |
+| rapidfuzz | String similarity scoring |
+| sentence-transformers | Semantic similarity scoring |
+| scikit-learn | ML/statistical support |
+| reportlab | PDF/report utilities |
+| streamlit | Future dashboard interface |
 
-## Installation and Run
+## Project Structure
 
-### 1. Clone the repository
+```text
+Spectra/
+├── main.py
+├── modules/
+│   ├── pii_detector.py
+│   ├── regurgitation_detector.py
+│   └── membership_inference.py
+├── utils/
+│   └── report_generator.py
+├── reports/
+├── prompts/
+└── requirements.txt
+```
+
+## Installation and Setup
 
 ```bash
 git clone https://github.com/<your-username>/Spectra.git
 cd Spectra
-```
 
-### 2. Create and activate a virtual environment
-
-```bash
 python -m venv venv
-```
-
-Windows PowerShell:
-
-```powershell
+# Windows PowerShell
 venv\Scripts\Activate.ps1
-```
+# macOS/Linux
+# source venv/bin/activate
 
-macOS/Linux:
-
-```bash
-source venv/bin/activate
-```
-
-### 3. Install dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set API key in `.env`
+Create a `.env` file in the project root:
 
 ```env
 GEMINI_API_KEY=your_api_key_here
 ```
 
-### 5. Run Spectra
+## How to Run
 
 ```bash
 python main.py
@@ -92,31 +135,42 @@ python main.py
 
 ## Sample Output
 
-When the audit completes, Spectra prints module risk scores in the terminal and generates a timestamped HTML report in the `reports/` directory.
+```text
+[+] Starting Spectra Audit...
+[+] Running: PII Detection
+[+] Running: Verbatim Regurgitation Detection
+[+] Running: Membership Inference Attack
+[+] Audit complete
+[+] Report generated at: reports/spectra_audit_report_YYYYMMDD_HHMMSS.html
+```
 
-Example report file:
-
-`reports/spectra_audit_report_YYYYMMDD_HHMMSS.html`
-
-The report includes:
-
-- model name tested
-- audit date and time
-- per-module risk bars (green/yellow/red thresholds)
-- overall combined risk score
+The HTML report includes model metadata, audit timestamp, per-module visual risk bars, and a combined risk score.
 
 ## Research References
 
 1. Carlini et al. (2021), *Extracting Training Data from Large Language Models*.
 2. Shokri et al. (2017), *Membership Inference Attacks against Machine Learning Models*.
-3. Differential Privacy literature (foundational works on privacy-preserving learning and formal guarantees).
+3. Differential Privacy literature and foundational privacy-preserving ML research.
+
+## Roadmap
+
+```text
+[+] v1 complete: core 3-module privacy auditing pipeline + HTML reporting
+[ ] Add OpenAI model support
+[ ] Build interactive Streamlit dashboard
+[ ] Add native PDF report export workflow
+```
 
 ## Disclaimer
 
-Spectra is intended **for educational and research purposes only**. It should be used responsibly, with proper authorization, and in compliance with applicable laws, regulations, and organizational policies.
+This project is for **educational and research use only**. Use responsibly, with explicit authorization, and in compliance with applicable legal and organizational requirements.
 
 ## Author
 
 **Rudra Singh**  
 Cybersecurity Aspirant
+
+```text
+Spectra does not guess trust. It measures it.
+```
 
