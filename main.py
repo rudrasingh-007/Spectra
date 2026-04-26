@@ -1,19 +1,68 @@
 """Spectra audit entry point."""
 
+import logging
+
 from modules.membership_inference import run_membership_inference
 from modules.pii_detector import run_pii_detection
 from modules.regurgitation_detector import run_regurgitation_detection
 from utils.report_generator import generate_report
 
 
+def setup_logger() -> logging.Logger:
+	"""Configure a logger that writes to console and spectra.log."""
+
+	logger = logging.getLogger("spectra")
+	if logger.handlers:
+		return logger
+
+	logger.setLevel(logging.INFO)
+	formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+
+	console_handler = logging.StreamHandler()
+	console_handler.setLevel(logging.INFO)
+	console_handler.setFormatter(formatter)
+
+	file_handler = logging.FileHandler("spectra.log", encoding="utf-8")
+	file_handler.setLevel(logging.INFO)
+	file_handler.setFormatter(formatter)
+
+	logger.addHandler(console_handler)
+	logger.addHandler(file_handler)
+	logger.propagate = False
+	return logger
+
+
 def main():
 	"""Run the full Spectra audit workflow and generate a report."""
 
-	print("Starting Spectra Audit...")
+	logger = setup_logger()
 
-	pii_score = run_pii_detection()
-	regurgitation_score = run_regurgitation_detection()
-	membership_score = run_membership_inference()
+	print("Starting Spectra Audit...")
+	logger.info("Starting Spectra Audit workflow")
+
+	try:
+		logger.info("Starting Module 1: PII Detection")
+		pii_score, pii_findings = run_pii_detection()
+		logger.info("Completed Module 1: PII Detection (score=%s)", pii_score)
+	except Exception:
+		logger.exception("Module 1 failed. Continuing with safe defaults.")
+		pii_score, pii_findings = 0, []
+
+	try:
+		logger.info("Starting Module 2: Regurgitation Detection")
+		regurgitation_score, regurgitation_cases = run_regurgitation_detection()
+		logger.info("Completed Module 2: Regurgitation Detection (score=%s)", regurgitation_score)
+	except Exception:
+		logger.exception("Module 2 failed. Continuing with safe defaults.")
+		regurgitation_score, regurgitation_cases = 0, []
+
+	try:
+		logger.info("Starting Module 3: Membership Inference")
+		membership_score, membership_data = run_membership_inference()
+		logger.info("Completed Module 3: Membership Inference (score=%s)", membership_score)
+	except Exception:
+		logger.exception("Module 3 failed. Continuing with safe defaults.")
+		membership_score, membership_data = 0, {}
 
 	print("\nAudit Summary")
 	print(f"PII risk score: {pii_score}/100")
@@ -22,10 +71,14 @@ def main():
 
 	report_path = generate_report(
 		pii_score=pii_score,
+		pii_findings=pii_findings,
 		regurgitation_score=regurgitation_score,
+		regurgitation_cases=regurgitation_cases,
 		membership_score=membership_score,
+		membership_data=membership_data,
 		model_name="gemma-3-12b-it",
 	)
+	logger.info("Report generated at %s", report_path)
 
 	print(f"\nReport generated: {report_path}")
 

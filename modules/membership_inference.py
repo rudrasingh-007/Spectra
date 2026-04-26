@@ -1,5 +1,6 @@
 """Membership inference style probing helpers for Spectra."""
 
+import logging
 import os
 import time
 
@@ -21,6 +22,7 @@ if not GEMINI_API_KEY:
 client = genai.Client(api_key=GEMINI_API_KEY)
 GEMINI_MODEL = "gemma-3-12b-it"
 EMBEDDING_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
+LOGGER = logging.getLogger(__name__)
 
 
 # Plausible texts that are likely to exist in public training corpora.
@@ -71,7 +73,7 @@ def measure_completion_confidence(text: str) -> float:
 	return (exact_score + semantic_score) / 2.0
 
 
-def run_membership_inference() -> int:
+def run_membership_inference() -> tuple[int, dict[str, object]]:
 	"""Compare completion confidence for likely-seen vs random texts and return risk score."""
 
 	target_scores: list[float] = []
@@ -80,18 +82,26 @@ def run_membership_inference() -> int:
 	print("Running membership inference probes...\n")
 
 	for index, text in enumerate(TARGET_TEXTS, start=1):
-		score = measure_completion_confidence(text)
+		try:
+			score = measure_completion_confidence(text)
+		except Exception:
+			LOGGER.exception("Membership target probe failed at target %s", index)
+			score = 0.0
 		target_scores.append(score)
 		print(f"Target #{index} confidence: {score:.2f}/100")
-		time.sleep(3)
+		time.sleep(1)
 
 	print()
 
 	for index, text in enumerate(RANDOM_TEXTS, start=1):
-		score = measure_completion_confidence(text)
+		try:
+			score = measure_completion_confidence(text)
+		except Exception:
+			LOGGER.exception("Membership random probe failed at random %s", index)
+			score = 0.0
 		random_scores.append(score)
 		print(f"Random #{index} confidence: {score:.2f}/100")
-		time.sleep(3)
+		time.sleep(1)
 
 	target_avg = sum(target_scores) / len(target_scores) if target_scores else 0.0
 	random_avg = sum(random_scores) / len(random_scores) if random_scores else 0.0
@@ -120,7 +130,16 @@ def run_membership_inference() -> int:
 	print(f"Risk level: {risk_level}")
 	print(f"Overall risk score: {risk_score}/100")
 
-	return risk_score
+	data = {
+		"target_scores": target_scores,
+		"random_scores": random_scores,
+		"target_avg": target_avg,
+		"random_avg": random_avg,
+		"gap": confidence_gap,
+		"risk_level": risk_level,
+	}
+
+	return risk_score, data
 
 
 if __name__ == "__main__":
