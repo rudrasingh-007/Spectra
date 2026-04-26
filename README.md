@@ -17,12 +17,14 @@
 **Tagline:** Probe. Measure. Expose privacy risk before deployment.
 
 ```ini
-[SPECTRA_SYSTEM]
-version = v1.0
-status = operational
-purpose = LLM Privacy Auditing Tool
-primary_model = gemma-3-12b-it
+SYSTEM         : LLM Privacy Auditing Tool
+VERSION        : 1.0
+STATUS         : OPERATIONAL
+CLASSIFICATION : OPEN SOURCE
+TARGET         : Large Language Models
 ```
+
+"Spectra systematically interrogates language models to surface latent privacy exposure before deployment."
 
 ## DASHBOARD PREVIEW
 ![Spectra Dashboard](assets/dashboard_preview.png)
@@ -34,14 +36,14 @@ Spectra is a Python-based LLM privacy auditing toolkit that stress-tests languag
 ## FEATURES
 
 ```text
-[+]  PII Detection Probing          8 adversarial prompts across social engineering vectors
-[+]  Regurgitation Detection        Exact + semantic similarity scoring against 8 sensitive documents
-[+]  Membership Inference Attack    Confidence gap analysis across target vs random text corpora
-[+]  Weighted Risk Scoring          Entity-type weighted PII scoring with critical/high/low tiers
-[+]  Detailed HTML Report           Per-prompt breakdowns, similarity tables, CSS bar charts
-[+]  Live Streamlit Dashboard       Real-time audit execution with step indicators and progress bar
-[+]  Error Handling + Logging       Per-call exception handling with spectra.log audit trail
-[+]  Auto Report Cleanup            Keeps last 5 reports, auto-deletes older ones
+[MODULE-1]  PII Detection Probing          8 adversarial prompts across social engineering vectors
+[MODULE-2]  Regurgitation Detection        Exact + semantic similarity against 8 sensitive documents
+[MODULE-3]  Membership Inference Attack    Confidence gap analysis across target vs random corpora
+[CORE]      Weighted Risk Scoring          Entity-type weighted scoring with critical/high/low tiers
+[CORE]      Detailed HTML Report           Per-prompt breakdowns, similarity tables, CSS bar charts
+[CORE]      Live Streamlit Dashboard       Real-time execution with step indicators and progress bar
+[CORE]      Error Handling + Logging       Per-call exception handling with spectra.log audit trail
+[CORE]      Auto Report Cleanup            Keeps last 5 reports, auto-deletes older ones
 ```
 
 ## AUDIT PIPELINE
@@ -91,22 +93,24 @@ OUTPUT LAYER
 		text to estimate potential membership inference signal.
 ```
 
-## RISK MATRIX
+## RISK CLASSIFICATION MATRIX
 
 ```text
-HIGH    [████████████]  Immediate privacy concern. Review model deployment.
-MEDIUM  [████████░░░░]  Investigate further. Cross-reference with use case.
-LOW     [████░░░░░░░░]  Monitor. Acceptable for most deployments.
-MINIMAL [██░░░░░░░░░░]  No significant privacy signal detected.
+CRITICAL   PII Score ----------- 100/100   Privacy breach confirmed. Halt deployment.
+HIGH       MEM Score ----------- 060/100   Significant exposure. Audit before production.
+MEDIUM     REG Score ----------- 020/100   Moderate signal. Investigate findings.
+LOW        ALL Score ----------- 010/100   Minimal exposure. Monitor across updates.
 ```
 
-## PRIVACY ATTACK VECTORS
+## PRIVACY THREAT SURFACE
 
-```text
-pii_probing          regurgitation_detection    membership_inference
-social_engineering   semantic_similarity        confidence_gap_analysis
-entity_extraction    verbatim_reproduction
-```
+| Vector | Method | Tool |
+|--------|--------|------|
+| PII Extraction | Adversarial prompting | Presidio + weighted scoring |
+| Semantic Regurgitation | Meaning-based similarity | sentence-transformers |
+| Verbatim Reproduction | Exact text matching | rapidfuzz |
+| Membership Inference | Confidence gap analysis | hybrid exact + semantic |
+| Social Engineering | Role-play prompt injection | custom prompt engine |
 
 ## SCREENSHOTS
 
@@ -214,20 +218,20 @@ The HTML report includes model metadata, audit timestamp, per-module visual risk
 ## ROADMAP
 
 ```text
-[COMPLETE]  V1 — Core 3-module privacy auditing pipeline
-[COMPLETE]  V2 — Weighted scoring, hybrid similarity, tiered risk
-[COMPLETE]  V3 — Detailed HTML report, Streamlit dashboard, error handling
-[PLANNED]   V4 — OpenAI model support, PDF export, multi-model comparison
-[PLANNED]   V5 — Scheduled audits, API endpoint, fine-tuned PII classifier
+[RELEASED]  v1.0 — Core 3-module privacy auditing pipeline
+[RELEASED]  v2.0 — Weighted scoring, hybrid similarity, tiered risk
+[RELEASED]  v3.0 — Detailed HTML report, Streamlit dashboard, error handling
+[QUEUED]    v4.0 — OpenAI support, PDF export, multi-model comparison
+[QUEUED]    v5.0 — Scheduled audits, API endpoint, fine-tuned PII classifier
 ```
 
 ## CONTRIBUTING
 
 ```text
-[+] Fork the repository
-[+] Create a feature branch
-[+] Keep changes modular and testable
-[+] Open a pull request with clear rationale and sample output
+>> Fork the repository
+>> Create a feature branch
+>> Keep changes modular and testable
+>> Open a pull request with clear rationale and sample output
 ```
 
 ## LICENSE
@@ -244,6 +248,6 @@ This project is for **educational and research use only**. Use responsibly, with
 Cybersecurity Aspirant
 
 ```text
-[ SPECTRA ] — LLM PRIVACY INTELLIGENCE — OPEN SOURCE
+[ SPECTRA ] — INTERROGATE. MEASURE. SECURE. — OPEN SOURCE
 ```
 
