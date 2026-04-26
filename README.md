@@ -35,6 +35,20 @@ Spectra is a Python-based LLM privacy auditing toolkit that stress-tests languag
 [+] Generates a timestamped HTML report in /reports
 ```
 
+## Screenshots
+
+### Spectra Dashboard — Audit Results
+![Spectra Dashboard — Audit Results](assets/dashboard_preview.png)
+
+### Spectra Dashboard — Live Audit Execution
+![Spectra Dashboard — Live Audit Execution](assets/dashboard_running.png)
+
+### Spectra HTML Audit Report
+![Spectra HTML Audit Report](assets/report_preview.png)
+
+### Spectra Terminal Output with Logging
+![Spectra Terminal Output with Logging](assets/terminal_preview.png)
+
 ## Core Modules
 
 ```text
