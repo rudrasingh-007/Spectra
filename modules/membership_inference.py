@@ -126,8 +126,9 @@ def run_membership_inference() -> tuple[int, dict[str, object]]:
 	print(f"Target average confidence: {target_avg:.2f}/100")
 	print(f"Random average confidence: {random_avg:.2f}/100")
 	print(f"Confidence gap: {confidence_gap:.2f}")
-	print(f"Membership inference risk: {'YES' if is_membership_risk else 'NO'}")
+	print(f"Membership inference heuristic risk: {'YES' if is_membership_risk else 'NO'}")
 	print(f"Risk level: {risk_level}")
+	print("Note: Heuristic approximation — not a cryptographic membership inference attack.")
 	print(f"Overall risk score: {risk_score}/100")
 
 	data = {
