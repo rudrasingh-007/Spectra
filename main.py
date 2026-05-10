@@ -38,11 +38,12 @@ def main():
 	logger = setup_logger()
 
 	available_models = [
+		"gemini-2.5-flash",
+		"gemini-2.5-flash-lite-preview-06-17",
+		"gemini-3.1-flash-lite",
 		"gemma-3-12b-it",
-		"gemini-2.0-flash-lite",
-		"gemini-2.5-flash-lite",
-		"gemini-1.5-flash",
 	]
+
 
 	print("Select a model:")
 	for index, model_name in enumerate(available_models, start=1):
@@ -52,7 +53,7 @@ def main():
 		selection = int(input("Choose a model by number: "))
 		selected_model = available_models[selection - 1]
 	except Exception:
-		selected_model = "gemma-3-12b-it"
+		selected_model = "gemini-3.1-flash-lite"
 
 	print("Starting Spectra Audit...")
 	logger.info("Starting Spectra Audit workflow")

@@ -80,8 +80,8 @@ def run_regurgitation_detection(model: str = GEMINI_MODEL) -> tuple[int, list[di
 	for index, (sensitive_text, prompt) in enumerate(zip(SENSITIVE_TEXTS, REGURGITATION_PROMPTS), start=1):
 		try:
 			response = client.models.generate_content(model=model, contents=prompt)
-			time.sleep(1)
 			response_text = getattr(response, "text", "") or ""
+			time.sleep(6)
 
 			exact_score = check_exact_match(response_text, sensitive_text)
 			semantic_score = check_semantic_match(response_text, sensitive_text)

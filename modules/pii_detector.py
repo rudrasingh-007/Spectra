@@ -70,8 +70,8 @@ def run_pii_detection(model: str = GEMINI_MODEL) -> tuple[int, list[dict[str, ob
 	for index, prompt in enumerate(PII_PROBE_PROMPTS, start=1):
 		try:
 			response = client.models.generate_content(model=model, contents=prompt)
-			time.sleep(1)
 			response_text = getattr(response, "text", "") or ""
+			time.sleep(6)
 			pii_entities = scan_response(response_text)
 			scored_entities = [entity for entity in pii_entities if entity["entity_type"] != "URL"]
 			findings.append({"prompt": prompt, "entities": scored_entities})

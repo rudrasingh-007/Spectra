@@ -64,6 +64,8 @@ def measure_completion_confidence(text: str, model: str = GEMINI_MODEL) -> float
 	)
 	response = client.models.generate_content(model=model, contents=prompt)
 	completion = getattr(response, "text", "") or ""
+	# Pause briefly after reading response text to respect rate limits
+	time.sleep(6)
 
 	exact_score = float(fuzz.ratio(completion.strip(), expected_suffix.strip()))
 	completion_embedding = EMBEDDING_MODEL.encode(completion.strip(), convert_to_tensor=True)
@@ -89,7 +91,6 @@ def run_membership_inference(model: str = GEMINI_MODEL) -> tuple[int, dict[str, 
 			score = 0.0
 		target_scores.append(score)
 		print(f"Target #{index} confidence: {score:.2f}/100")
-		time.sleep(1)
 
 	print()
 
@@ -101,7 +102,6 @@ def run_membership_inference(model: str = GEMINI_MODEL) -> tuple[int, dict[str, 
 			score = 0.0
 		random_scores.append(score)
 		print(f"Random #{index} confidence: {score:.2f}/100")
-		time.sleep(1)
 
 	target_avg = sum(target_scores) / len(target_scores) if target_scores else 0.0
 	random_avg = sum(random_scores) / len(random_scores) if random_scores else 0.0
