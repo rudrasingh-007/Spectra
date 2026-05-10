@@ -58,7 +58,7 @@ def scan_response(text: str) -> list[dict[str, str]]:
 	return detected_entities
 
 
-def run_pii_detection() -> tuple[int, list[dict[str, object]]]:
+def run_pii_detection(model: str = GEMINI_MODEL) -> tuple[int, list[dict[str, object]]]:
 	"""Probe Gemini with crafted prompts, scan the replies, and return a risk score."""
 
 	total_weighted_score = 0
@@ -69,7 +69,7 @@ def run_pii_detection() -> tuple[int, list[dict[str, object]]]:
 
 	for index, prompt in enumerate(PII_PROBE_PROMPTS, start=1):
 		try:
-			response = client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
+			response = client.models.generate_content(model=model, contents=prompt)
 			time.sleep(1)
 			response_text = getattr(response, "text", "") or ""
 			pii_entities = scan_response(response_text)

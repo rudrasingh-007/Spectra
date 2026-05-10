@@ -69,7 +69,7 @@ def check_semantic_match(response: str, original: str) -> float:
 	return max(0.0, min(100.0, cosine_similarity * 100.0))
 
 
-def run_regurgitation_detection() -> tuple[int, list[dict[str, object]]]:
+def run_regurgitation_detection(model: str = GEMINI_MODEL) -> tuple[int, list[dict[str, object]]]:
 	"""Run prompt-based regurgitation checks and return an overall risk score."""
 
 	total_weight = 0
@@ -79,7 +79,7 @@ def run_regurgitation_detection() -> tuple[int, list[dict[str, object]]]:
 
 	for index, (sensitive_text, prompt) in enumerate(zip(SENSITIVE_TEXTS, REGURGITATION_PROMPTS), start=1):
 		try:
-			response = client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
+			response = client.models.generate_content(model=model, contents=prompt)
 			time.sleep(1)
 			response_text = getattr(response, "text", "") or ""
 

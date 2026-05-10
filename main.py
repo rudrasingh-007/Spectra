@@ -37,12 +37,29 @@ def main():
 
 	logger = setup_logger()
 
+	available_models = [
+		"gemma-3-12b-it",
+		"gemini-2.0-flash-lite",
+		"gemini-2.5-flash-lite",
+		"gemini-1.5-flash",
+	]
+
+	print("Select a model:")
+	for index, model_name in enumerate(available_models, start=1):
+		print(f"{index}. {model_name}")
+
+	try:
+		selection = int(input("Choose a model by number: "))
+		selected_model = available_models[selection - 1]
+	except Exception:
+		selected_model = "gemma-3-12b-it"
+
 	print("Starting Spectra Audit...")
 	logger.info("Starting Spectra Audit workflow")
 
 	try:
 		logger.info("Starting Module 1: PII Detection")
-		pii_score, pii_findings = run_pii_detection()
+		pii_score, pii_findings = run_pii_detection(model=selected_model)
 		logger.info("Completed Module 1: PII Detection (score=%s)", pii_score)
 	except Exception:
 		logger.exception("Module 1 failed. Continuing with safe defaults.")
@@ -50,7 +67,7 @@ def main():
 
 	try:
 		logger.info("Starting Module 2: Regurgitation Detection")
-		regurgitation_score, regurgitation_cases = run_regurgitation_detection()
+		regurgitation_score, regurgitation_cases = run_regurgitation_detection(model=selected_model)
 		logger.info("Completed Module 2: Regurgitation Detection (score=%s)", regurgitation_score)
 	except Exception:
 		logger.exception("Module 2 failed. Continuing with safe defaults.")
@@ -58,7 +75,7 @@ def main():
 
 	try:
 		logger.info("Starting Module 3: Membership Inference")
-		membership_score, membership_data = run_membership_inference()
+		membership_score, membership_data = run_membership_inference(model=selected_model)
 		logger.info("Completed Module 3: Membership Inference (score=%s)", membership_score)
 	except Exception:
 		logger.exception("Module 3 failed. Continuing with safe defaults.")
@@ -76,7 +93,7 @@ def main():
 		regurgitation_cases=regurgitation_cases,
 		membership_score=membership_score,
 		membership_data=membership_data,
-		model_name="gemma-3-12b-it",
+		model_name=selected_model,
 	)
 	logger.info("Report generated at %s", report_path)
 
