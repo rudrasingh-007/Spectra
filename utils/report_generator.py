@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 
-def cleanup_old_reports(reports_dir, keep=5):
+def cleanup_old_reports(reports_dir, keep=3):
 	"""Keep only the most recent HTML reports and delete older ones silently."""
 
 	try:

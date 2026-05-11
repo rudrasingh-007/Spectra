@@ -43,7 +43,7 @@ Spectra is a Python-based LLM privacy auditing toolkit that stress-tests languag
 [CORE]      Detailed HTML Report           Per-prompt breakdowns, similarity tables, CSS bar charts
 [CORE]      Live Streamlit Dashboard       Real-time execution with step indicators and progress bar
 [CORE]      Error Handling + Logging       Per-call exception handling with spectra.log audit trail
-[CORE]      Auto Report Cleanup            Keeps last 5 reports, auto-deletes older ones
+[CORE]      Auto Report Cleanup            Keeps last 3 reports, auto-deletes older ones
 ```
 
 ## AUDIT PIPELINE
@@ -138,8 +138,8 @@ LOW        ALL Score ----------- 010/100   Minimal exposure. Monitor across upda
 | spacy | NLP backend support |
 | rapidfuzz | String similarity scoring |
 | sentence-transformers | Semantic similarity scoring |
-| streamlit | Future dashboard interface |
-| Supported Models | gemini-3.1-flash-lite, gemini-2.5-flash, gemini-2.5-flash-lite |
+| streamlit | Live audit dashboard |
+| Supported Models | gemini-3.1-flash-lite, gemini-2.5-flash, gemini-2.5-flash-lite, gemma-3-12b-it |
 
 ## SYSTEM STRUCTURE
 
@@ -222,8 +222,8 @@ Note: This project implements heuristic approximations inspired by the above res
 
 ```text
 [COMPLETE]  v1.0 — Core 3-module privacy risk evaluation pipeline with HTML report and Streamlit dashboard
-[QUEUED]    v4.0 — OpenAI support, PDF export, multi-model comparison
-[QUEUED]    v5.0 — Scheduled audits, API endpoint, fine-tuned PII classifier
+[QUEUED]    v2.0 — OpenAI support, PDF export, multi-model comparison
+[QUEUED]    v3.0 — Scheduled audits, API endpoint, fine-tuned PII classifier
 ```
 
 ## CONTRIBUTING

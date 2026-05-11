@@ -18,9 +18,14 @@ st.set_page_config(page_title="Spectra // Privacy Intelligence Console", layout=
 
 
 # Shared constants for model display and report discovery.
-MODEL_NAME = "gemma-3-12b-it"
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 REPORTS_DIR = os.path.join(PROJECT_ROOT, "reports")
+AVAILABLE_MODELS = [
+	"gemini-2.5-flash",
+	"gemini-2.5-flash-lite-preview-06-17",
+	"gemini-3.1-flash-lite",
+	"gemma-3-12b-it",
+]
 
 
 def get_risk_color(score: float) -> str:
@@ -119,6 +124,8 @@ if "audit_status" not in st.session_state:
 	st.session_state.audit_status = "IDLE"
 if "last_exit_code" not in st.session_state:
 	st.session_state.last_exit_code = None
+if "selected_model" not in st.session_state:
+	st.session_state.selected_model = AVAILABLE_MODELS[0]
 
 
 # Dark, card-based design with security-console styling and accent glow.
@@ -289,7 +296,7 @@ with st.sidebar:
 	st.markdown("## Spectra Control")
 	st.caption("Security-focused model privacy operations")
 	st.markdown("### Model Under Test")
-	st.markdown(f"<div class='terminal-box'>{MODEL_NAME}</div>", unsafe_allow_html=True)
+	st.selectbox("", AVAILABLE_MODELS, key="selected_model", label_visibility="collapsed")
 
 	now = datetime.now()
 	st.markdown("### Session Info")
@@ -297,17 +304,22 @@ with st.sidebar:
 	st.markdown(f"**Time:** {now.strftime('%H:%M:%S')}")
 
 	audit_status = st.session_state.audit_status
-	status_color = "#94a3b8"
-	if audit_status == "RUNNING":
-		status_color = "#22d3ee"
-	elif audit_status == "COMPLETE":
-		status_color = "#00d084"
-
 	st.markdown("### Audit Status")
-	st.markdown(
-		f"<div class='terminal-box'><span style='color:{status_color}; font-weight:700;'>[{audit_status}]</span></div>",
-		unsafe_allow_html=True,
-	)
+	status_placeholder = st.empty()
+
+	def render_audit_status():
+		status = st.session_state.audit_status
+		status_color = "#94a3b8"
+		if status == "RUNNING":
+			status_color = "#22d3ee"
+		elif status == "COMPLETE":
+			status_color = "#00d084"
+		status_placeholder.markdown(
+			f"<div class='terminal-box'><span style='color:{status_color}; font-weight:700;'>[{status}]</span></div>",
+			unsafe_allow_html=True,
+		)
+
+	render_audit_status()
 
 	run_audit = st.button("Run Audit", use_container_width=True, type="primary")
 
@@ -321,6 +333,11 @@ report_area = st.container()
 # Trigger end-to-end audit execution when button is clicked.
 if run_audit:
 	st.session_state.audit_status = "RUNNING"
+	# update sidebar placeholder immediately so it reflects RUNNING
+	try:
+		render_audit_status()
+	except Exception:
+		pass
 	st.session_state.audit_output = ""
 	st.session_state.scores = {}
 	st.session_state.last_exit_code = None
@@ -337,7 +354,7 @@ if run_audit:
 
 		with st.spinner("Running Spectra Audit..."):
 			process = subprocess.Popen(
-				[sys.executable, "main.py"],
+				[sys.executable, "main.py", "--model", st.session_state.selected_model],
 				cwd=PROJECT_ROOT,
 				stdout=subprocess.PIPE,
 				stderr=subprocess.STDOUT,
@@ -358,19 +375,32 @@ if run_audit:
 			while process.poll() is None:
 				elapsed = time.time() - start_time
 
-				# Simulate module status progression using elapsed time windows.
+				# Maintain progress bar behavior based on elapsed time.
 				if elapsed < 40:
-					step_statuses = ["RUNNING", "WAITING", "WAITING"]
 					progress_value = min(0.33, elapsed / 120)
 				elif elapsed < 90:
-					step_statuses = ["COMPLETE", "RUNNING", "WAITING"]
 					progress_value = min(0.66, 0.33 + (elapsed - 40) / 150)
 				elif elapsed < 130:
-					step_statuses = ["COMPLETE", "COMPLETE", "RUNNING"]
 					progress_value = min(0.95, 0.66 + (elapsed - 90) / 100)
 				else:
-					step_statuses = ["COMPLETE", "COMPLETE", "RUNNING"]
 					progress_value = 0.98
+
+				# Determine module step statuses by parsing the live output logs.
+				with output_lock:
+					combined_output = "\n".join(output_lines)
+
+				completed1 = "Completed Module 1" in combined_output
+				completed2 = "Completed Module 2" in combined_output
+				completed3 = "Completed Module 3" in combined_output
+
+				if not completed1:
+					step_statuses = ["RUNNING", "WAITING", "WAITING"]
+				elif not completed2:
+					step_statuses = ["COMPLETE", "RUNNING", "WAITING"]
+				elif not completed3:
+					step_statuses = ["COMPLETE", "COMPLETE", "RUNNING"]
+				else:
+					step_statuses = ["COMPLETE", "COMPLETE", "COMPLETE"]
 
 				render_step_indicator(step_placeholder, step_statuses)
 				module_progress.progress(progress_value)
@@ -397,6 +427,12 @@ if run_audit:
 			st.session_state.scores = parse_scores(combined_output)
 			st.session_state.latest_report, st.session_state.latest_report_time = find_latest_report()
 			st.session_state.audit_status = "COMPLETE"
+
+			# update sidebar placeholder to COMPLETE
+			try:
+				render_audit_status()
+			except Exception:
+				pass
 
 		if st.session_state.last_exit_code == 0:
 			st.success("Audit completed successfully.")

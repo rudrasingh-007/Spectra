@@ -1,5 +1,6 @@
 """Spectra audit entry point."""
 
+import argparse
 import logging
 
 from modules.membership_inference import run_membership_inference
@@ -36,6 +37,9 @@ def main():
 	"""Run the full Spectra audit workflow and generate a report."""
 
 	logger = setup_logger()
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--model")
+	args = parser.parse_args()
 
 	available_models = [
 		"gemini-2.5-flash",
@@ -44,16 +48,18 @@ def main():
 		"gemma-3-12b-it",
 	]
 
+	if args.model in available_models:
+		selected_model = args.model
+	else:
+		print("Select a model:")
+		for index, model_name in enumerate(available_models, start=1):
+			print(f"{index}. {model_name}")
 
-	print("Select a model:")
-	for index, model_name in enumerate(available_models, start=1):
-		print(f"{index}. {model_name}")
-
-	try:
-		selection = int(input("Choose a model by number: "))
-		selected_model = available_models[selection - 1]
-	except Exception:
-		selected_model = "gemini-3.1-flash-lite"
+		try:
+			selection = int(input("Choose a model by number: "))
+			selected_model = available_models[selection - 1]
+		except Exception:
+			selected_model = "gemini-3.1-flash-lite"
 
 	print("Starting Spectra Audit...")
 	logger.info("Starting Spectra Audit workflow")
