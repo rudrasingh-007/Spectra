@@ -83,10 +83,12 @@ OUTPUT LAYER
 [+] PII Detection Probing
 		Uses crafted extraction prompts and Presidio entity analysis to detect leaked emails,
 		phone numbers, names, addresses, and identifier patterns.
+		Note: This module measures PII generation risk, not confirmed leakage of real training data.
 
 [+] Verbatim Regurgitation Detection
 		Tests whether the model reproduces sensitive-style text using exact similarity
 		(RapidFuzz) and semantic similarity (Sentence Transformers).
+		Note: The corpus used consists of public domain texts likely present in training data, not verified training data extracts. Similarity results reflect generation behavior, not confirmed memorization.
 
 [+] Membership Inference Heuristic
 		Compares completion confidence between likely-seen corpus text and random nonsense
@@ -96,7 +98,7 @@ OUTPUT LAYER
 ## RISK CLASSIFICATION MATRIX
 
 ```text
-CRITICAL   PII Score ----------- 100/100   Privacy breach confirmed. Halt deployment.
+CRITICAL   PII Score ----------- 100/100   High PII generation risk detected. Review model outputs carefully.
 HIGH       MEM Score ----------- 060/100   Significant exposure. Audit before production.
 MEDIUM     REG Score ----------- 020/100   Moderate signal. Investigate findings.
 LOW        ALL Score ----------- 010/100   Minimal exposure. Monitor across updates.
@@ -136,7 +138,6 @@ LOW        ALL Score ----------- 010/100   Minimal exposure. Monitor across upda
 | spacy | NLP backend support |
 | rapidfuzz | String similarity scoring |
 | sentence-transformers | Semantic similarity scoring |
-| scikit-learn | ML/statistical support |
 | streamlit | Future dashboard interface |
 | Supported Models | gemini-3.1-flash-lite, gemini-2.5-flash, gemini-2.5-flash-lite |
 
