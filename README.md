@@ -38,7 +38,7 @@ Spectra is a Python-based LLM privacy auditing toolkit that stress-tests languag
 ```text
 [MODULE-1]  PII Detection Probing          8 adversarial prompts across social engineering vectors
 [MODULE-2]  Regurgitation Detection        Exact + semantic similarity against 8 sensitive documents
-[MODULE-3]  Membership Inference Attack    Confidence gap analysis across target vs random corpora
+[MODULE-3]  Membership Inference Heuristic    Confidence gap analysis across target vs random corpora
 [CORE]      Weighted Risk Scoring          Entity-type weighted scoring with critical/high/low tiers
 [CORE]      Detailed HTML Report           Per-prompt breakdowns, similarity tables, CSS bar charts
 [CORE]      Live Streamlit Dashboard       Real-time execution with step indicators and progress bar
@@ -88,7 +88,7 @@ OUTPUT LAYER
 		Tests whether the model reproduces sensitive-style text using exact similarity
 		(RapidFuzz) and semantic similarity (Sentence Transformers).
 
-[+] Membership Inference Attack
+[+] Membership Inference Heuristic
 		Compares completion confidence between likely-seen corpus text and random nonsense
 		text to estimate potential membership inference signal.
 ```
@@ -137,8 +137,8 @@ LOW        ALL Score ----------- 010/100   Minimal exposure. Monitor across upda
 | rapidfuzz | String similarity scoring |
 | sentence-transformers | Semantic similarity scoring |
 | scikit-learn | ML/statistical support |
-| reportlab | PDF/report utilities |
 | streamlit | Future dashboard interface |
+| Supported Models | gemini-3.1-flash-lite, gemini-2.5-flash, gemini-2.5-flash-lite |
 
 ## SYSTEM STRUCTURE
 
@@ -202,7 +202,7 @@ streamlit run dashboard.py
 [+] Starting Spectra Audit...
 [+] Running: PII Detection
 [+] Running: Verbatim Regurgitation Detection
-[+] Running: Membership Inference Attack
+[+] Running: Membership Inference Heuristic
 [+] Audit complete
 [+] Report generated at: reports/spectra_audit_report_YYYYMMDD_HHMMSS.html
 ```
@@ -215,12 +215,12 @@ The HTML report includes model metadata, audit timestamp, per-module visual risk
 2. Shokri et al. (2017), *Membership Inference Attacks against Machine Learning Models*.
 3. Differential Privacy literature and foundational privacy-preserving ML research.
 
+Note: This project implements heuristic approximations inspired by the above research. It does not fully replicate the cryptographic methods described in these papers.
+
 ## ROADMAP
 
 ```text
-[RELEASED]  v1.0 — Core 3-module privacy auditing pipeline
-[RELEASED]  v2.0 — Weighted scoring, hybrid similarity, tiered risk
-[RELEASED]  v3.0 — Detailed HTML report, Streamlit dashboard, error handling
+[COMPLETE]  v1.0 — Core 3-module privacy risk evaluation pipeline with HTML report and Streamlit dashboard
 [QUEUED]    v4.0 — OpenAI support, PDF export, multi-model comparison
 [QUEUED]    v5.0 — Scheduled audits, API endpoint, fine-tuned PII classifier
 ```
